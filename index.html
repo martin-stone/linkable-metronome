@@ -6,9 +6,15 @@
   </head>
   <body>
     <script>
+        const defaults = {
+            bpm: 120,
+        }
+
+        const options = Object.assign(defaults, readParams());
+
         var context = new (window.AudioContext || window.webkitAudioContext)();
         
-        var bpm = 120;
+        var bpm = parseFloat(options.bpm);
         
         var sr = 8000;
         var beatsPerBar = 4;
@@ -23,10 +29,9 @@
             // audio needs to be in [-1.0; 1.0]
             //data[i] = Math.random() * 2 - 1;
             var ibeat = i % beatSamps;
-            //data[i] = 1/ibeat;
             data[i] = sinc(ibeat/sr*6000);
         }
-        console.log(data);
+        //console.log(data);
         
         
         var source = context.createBufferSource();
@@ -38,6 +43,16 @@
         function sinc(x) {
             return x === 0 ? 1 : Math.sin(x)/x;
         }
-        </script>    
+
+        function readParams() {
+            const args = document.location.search.substring(1).split("&");
+            const opts = {};
+            args.forEach(function(keyValStr) {
+                const keyVal = keyValStr.split("=");
+                opts[keyVal[0]] = keyVal[1];
+            });
+            return opts;
+        }
+    </script>
   </body>
 </html>
