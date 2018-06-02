@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Linkable Metronome</title>
+  </head>
+  <body>
+    <script>
+        var context = new (window.AudioContext || window.webkitAudioContext)();
+        
+        var bpm = 120;
+        
+        var sr = 8000;
+        var beatsPerBar = 4;
+        
+        var beatSecs = 60 / bpm;
+        var beatSamps = Math.round(sr * beatSecs);
+        var barSamps = beatsPerBar * beatSamps;
+        var buffer = context.createBuffer(1, barSamps, sr);
+        
+        var data = buffer.getChannelData(0);
+        for (var i = 0; i < buffer.length; i++) {
+            // audio needs to be in [-1.0; 1.0]
+            //data[i] = Math.random() * 2 - 1;
+            var ibeat = i % beatSamps;
+            //data[i] = 1/ibeat;
+            data[i] = sinc(ibeat/sr*6000);
+        }
+        console.log(data);
+        
+        
+        var source = context.createBufferSource();
+        source.loop = true;
+        source.buffer = buffer;
+        source.connect(context.destination);
+        source.start();
+        
+        function sinc(x) {
+            return x === 0 ? 1 : Math.sin(x)/x;
+        }
+        </script>    
+  </body>
+</html>
