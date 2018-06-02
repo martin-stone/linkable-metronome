@@ -1,58 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <title>Linkable Metronome</title>
-  </head>
-  <body>
+</head>
+
+<body>
     <script>
-        const defaults = {
-            bpm: 120,
-        }
+        (function () {
+            const defaults = {
+                bpm: 120,
+            }
 
-        const options = Object.assign(defaults, readParams());
+            const options = Object.assign(defaults, readParams());
 
-        var context = new (window.AudioContext || window.webkitAudioContext)();
-        
-        var bpm = parseFloat(options.bpm);
-        
-        var sr = 8000;
-        var beatsPerBar = 4;
-        
-        var beatSecs = 60 / bpm;
-        var beatSamps = Math.round(sr * beatSecs);
-        var barSamps = beatsPerBar * beatSamps;
-        var buffer = context.createBuffer(1, barSamps, sr);
-        
-        var data = buffer.getChannelData(0);
-        for (var i = 0; i < buffer.length; i++) {
-            // audio needs to be in [-1.0; 1.0]
-            //data[i] = Math.random() * 2 - 1;
-            var ibeat = i % beatSamps;
-            data[i] = sinc(ibeat/sr*6000);
-        }
-        //console.log(data);
-        
-        
-        var source = context.createBufferSource();
-        source.loop = true;
-        source.buffer = buffer;
-        source.connect(context.destination);
-        source.start();
-        
-        function sinc(x) {
-            return x === 0 ? 1 : Math.sin(x)/x;
-        }
+            var context = new (window.AudioContext || window.webkitAudioContext)();
 
-        function readParams() {
-            const args = document.location.search.substring(1).split("&");
-            const opts = {};
-            args.forEach(function(keyValStr) {
-                const keyVal = keyValStr.split("=");
-                opts[keyVal[0]] = keyVal[1];
-            });
-            return opts;
-        }
+            var bpm = parseFloat(options.bpm);
+
+            var sr = 8000;
+            var beatsPerBar = 4;
+
+            var beatSecs = 60 / bpm;
+            var beatSamps = Math.round(sr * beatSecs);
+            var barSamps = beatsPerBar * beatSamps;
+            var buffer = context.createBuffer(1, barSamps, sr);
+
+            var data = buffer.getChannelData(0);
+            for (var i = 0; i < buffer.length; i++) {
+                // audio needs to be in [-1.0; 1.0]
+                //data[i] = Math.random() * 2 - 1;
+                var ibeat = i % beatSamps;
+                data[i] = sinc(ibeat / sr * 6000);
+            }
+            //console.log(data);
+
+
+            var source = context.createBufferSource();
+            source.loop = true;
+            source.buffer = buffer;
+            source.connect(context.destination);
+            source.start();
+
+            function sinc(x) {
+                return x === 0 ? 1 : Math.sin(x) / x;
+            }
+
+            function readParams() {
+                const args = document.location.search.substring(1).split("&");
+                const opts = {};
+                args.forEach(function (keyValStr) {
+                    const keyVal = keyValStr.split("=");
+                    opts[keyVal[0]] = keyVal[1];
+                });
+                return opts;
+            }
+        })();
     </script>
-  </body>
+</body>
+
 </html>
