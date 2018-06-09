@@ -58,7 +58,7 @@
                 document.getElementById("title").innerText = bpm;
                 const links = document.getElementById("bpm-links");
                 links.innerHTML = ["-5", "-1", "+1", "+5"].map(function (offset) {
-                    const href = document.location.search.replace(bpm, bpm + parseFloat(offset));
+                    const href = "?bpm=" + (bpm + parseFloat(offset));
                     return '<a href="' + href + '">' + offset + "</a>";
                 }).join("");
             }
