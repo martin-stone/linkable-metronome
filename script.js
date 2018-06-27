@@ -65,13 +65,13 @@
         const data = buffer.getChannelData(0);
         for (var i = 0; i < buffer.length; i++) {
             const ibeat = i % beatSamps;
-            data[i] = sinc(ibeat / sr * 6000);
+            data[i] = click(ibeat / sr * 10000);
         }
         return buffer;
     }
 
-    function sinc(x) {
-        return x === 0 ? 1 : Math.sin(x) / x;
+    function click(x) {
+        return 1 / x;
     }
 
     function readParams() {
