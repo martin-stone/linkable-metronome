@@ -12,16 +12,23 @@
         }
         const options = Object.assign(defaults, readParams());
         const bpm = parseFloat(options.bpm) || 120;
-
         const context = new window.AudioContext();
         const buffer = createBuffer(context, bpm);
-        attachButton(buffer, context);
         renderHtml(bpm);
+        
+        // Give context time to transition to "running" state (Firefox).
+        // Else we'll assume that we need a touch event and begin stopped.
+        setTimeout(begin, 500);
+
+        function begin() {
+            const canAutoplay = context.state == "running";
+            attachButton(buffer, context, canAutoplay);
+        }
     }
 
     function renderHtml(bpm) {
         document.title = document.title.replace("?", bpm);
-        document.getElementById("title").innerText = bpm;
+        document.getElementById("title").innerText = bpm; 
         const links = document.getElementById("bpm-links");
         links.innerHTML = ["-5", "-1", "+1", "+5"].map(function (offset) {
             const href = "?bpm=" + (bpm + parseFloat(offset));
@@ -29,10 +36,13 @@
         }).join("");
     }
 
-    function attachButton(buffer, context) {
-        var source = null;
+    function attachButton(buffer, context, canAutoplay) {
+        var source = !canAutoplay;
         const button = document.getElementById("start-stop");
-        button.addEventListener("click", function () {
+        button.addEventListener("click", playStop);
+        playStop();
+        
+        function playStop() {
             if (!source) {
                 source = createSource(context, buffer)
                 source.start();
@@ -43,7 +53,7 @@
                 source = null;
                 button.innerText = "Start";
             }
-        });
+        }
     }
 
     function createSource(context, buffer) {
