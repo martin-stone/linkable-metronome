@@ -11,49 +11,88 @@
             bpm: 120,
         }
         const options = Object.assign(defaults, readParams());
-        const bpm = parseFloat(options.bpm) || 120;
+        const initialBpm = parseFloat(options.bpm) || 120;
         const context = new window.AudioContext();
-        const buffer = createBuffer(context, bpm);
-        renderHtml(bpm);
-        
+
+        updatePage(initialBpm);
+
         // Give context time to transition to "running" state (Firefox).
         // Else we'll assume that we need a touch event and begin stopped.
         setTimeout(begin, 500);
 
         function begin() {
-            const canAutoplay = context.state == "running";
-            attachButton(buffer, context, canAutoplay);
-        }
-    }
+            const canAutoplay = context.state == "running"
+            var bpm = initialBpm;
+            var source = null;
 
-    function renderHtml(bpm) {
-        document.title = document.title.replace("?", bpm);
-        document.getElementById("title").innerText = bpm; 
-        const links = document.getElementById("bpm-links");
-        links.innerHTML = ["-5", "-1", "+1", "+5"].map(function (offset) {
-            const href = "?bpm=" + (bpm + parseFloat(offset));
-            return '<a href="' + href + '">' + offset + "</a>";
-        }).join("");
-    }
+            setUpLinks(onClickLink);
+            attachButton(onStartStopClick);
+            updateAudio(bpm, canAutoplay);
+            updateButton(source);
+            return;
 
-    function attachButton(buffer, context, canAutoplay) {
-        var source = !canAutoplay;
-        const button = document.getElementById("start-stop");
-        button.addEventListener("click", playStop);
-        playStop();
-        
-        function playStop() {
-            if (!source) {
+            function onClickLink(deltaBpm) {
+                bpm = Math.max(1, bpm + deltaBpm);
+                updateAudio(bpm);
+                updatePage(bpm);
+            }
+
+            function updateAudio(bpm, forceStart) {
+                const shouldStart = !!source || forceStart;
+                buffer = createBuffer(context, bpm);
+                if (shouldStart) {
+                    start();
+                }
+            }
+
+            function start() {
+                stop();
                 source = createSource(context, buffer)
                 source.start();
-                button.innerText = "Stop";
             }
-            else {
-                source.stop();
-                source = null;
-                button.innerText = "Start";
+
+            function stop() {
+                if (source) {
+                    source.stop();
+                    source = null;
+                }
+            }
+        
+            function onStartStopClick() {
+                if (source) {
+                    stop()
+                }
+                else {
+                    start();
+                }
+                updateButton(source);
             }
         }
+    }
+
+    function attachButton(onClick) {
+        const button = document.getElementById("start-stop");
+        button.onclick = onClick;
+    }
+
+    function setUpLinks(onClickLink) {
+        const links = Array.from(document.getElementById("bpm-links").children);
+        links.forEach(function (a) {
+            a.onclick = function () {
+                onClickLink(parseInt(a.innerText));
+            };
+        });
+    }
+
+    function updatePage(bpm) {
+        document.getElementById("title").innerText = bpm; 
+        document.title = document.title.replace(/\d+/, bpm);
+        history.replaceState({}, document.title.replace(/\d+/, bpm), "?bpm="+bpm);
+    }
+
+    function updateButton(source) {
+        const button = document.getElementById("start-stop");
+        button.innerText = source ? "Stop" : "Start";
     }
 
     function createSource(context, buffer) {
@@ -66,7 +105,7 @@
 
     function createBuffer(context, bpm) {
         const sr = 8000;
-        const beatsPerBar = 4;
+        const beatsPerBar = 1;
         const beatSecs = 60 / bpm;
         const beatSamps = Math.round(sr * beatSecs);
         const barSamps = beatsPerBar * beatSamps;
@@ -95,7 +134,7 @@
     }
 
     function isBrowserSupported() {
-        return (typeof Object.assign == "function") && (typeof window.AudioContext == "function");
+        return (typeof Object.assign == "function") && (typeof window.AudioContext == "function"); //xxx Array.from , history.replaceState
     }
 
     function browserMessage() {
