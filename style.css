@@ -9,8 +9,8 @@ h2 {
   margin: 0;
 }
 
-a,
-a:visited {
+#bpm-links a,
+#bpm-links a:visited {
   padding: 0.5em;
   margin: 0.5em;
   font-weight: bold;
@@ -20,8 +20,8 @@ a:visited {
   text-decoration: none;
 }
 
-a:hover,
-a:active {
+#bpm-links a:hover,
+#bpm-links a:active {
   background: #ccc;
   text-decoration: underline;
 }
@@ -43,4 +43,24 @@ button:active {
 
 #error-message {
   color: red;
+}
+
+table {
+  border: none;
+  margin: 0 auto;
+  text-align: right;
+}
+
+td:first-child {
+  font-weight: bold;
+  font-size: 110%
+}
+
+td {
+  padding: 0.2em 0.5em;
+}
+
+footer {
+  padding-top: 1em;
+  font-size: 70%;
 }

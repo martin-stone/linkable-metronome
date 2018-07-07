@@ -16,7 +16,7 @@
         setTimeout(begin, 500);
 
         function begin() {
-            const canAutoplay = context.state == "running"
+            const canAutoplay = context.state == "running";
             var bpm = initialBpm;
             var source = null;
 
@@ -120,7 +120,6 @@
 
     function readBpm() {
         const match = /bpm=(\d+)/gi.exec(document.location.search);
-        console.log(match);
         return match ? parseInt(match[1]) : 120;
     }
 
