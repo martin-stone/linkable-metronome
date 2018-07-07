@@ -17,7 +17,7 @@
             const row = table.appendChild(document.createElement("tr"));
             for (var bpm=first; bpm<first+5; ++bpm) {
                 const td = row.appendChild(document.createElement("td"));
-                td.innerHTML = '<a href="index.html?bpm='+bpm+'">'+bpm+"</a>";
+                td.innerHTML = '<a href="index.html?bpm='+bpm+'" title="Start metronome at '+bpm+' BPM">'+bpm+"</a>";
             }
         }
     </script>
