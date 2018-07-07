@@ -1,4 +1,7 @@
 (function () {
+    const initialBpm = readBpm();
+    updatePage(initialBpm);
+    
     if (isBrowserSupported()) {
         return main();
     }
@@ -7,17 +10,9 @@
     }
 
     function main() {
-        const defaults = {
-            bpm: 120,
-        }
-        const options = Object.assign(defaults, readParams());
-        const initialBpm = parseFloat(options.bpm) || 120;
-        const context = new window.AudioContext();
-
-        updatePage(initialBpm);
-
         // Give context time to transition to "running" state (Firefox).
         // Else we'll assume that we need a touch event and begin stopped.
+        const context = new window.AudioContext();
         setTimeout(begin, 500);
 
         function begin() {
@@ -123,21 +118,24 @@
         return 1 / x;
     }
 
-    function readParams() {
-        const args = document.location.search.substring(1).split("&");
-        const opts = {};
-        args.forEach(function (keyValStr) {
-            const keyVal = keyValStr.split("=");
-            opts[keyVal[0]] = keyVal[1];
-        });
-        return opts;
+    function readBpm() {
+        const match = /bpm=(\d+)/gi.exec(document.location.search);
+        console.log(match);
+        return match ? parseInt(match[1]) : 120;
     }
 
     function isBrowserSupported() {
-        return (typeof Object.assign == "function") && (typeof window.AudioContext == "function"); //xxx Array.from , history.replaceState
+        return (typeof window.AudioContext == "function"
+            && typeof Array.from == "function"
+            && typeof history.replaceState == "function"
+        );
     }
 
     function browserMessage() {
-        document.body.innerHTML = "Your browser is not supported";
+        const probablyHuman = !/bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent);
+        if (probablyHuman) {
+            document.getElementById("error-message").innerText = "Your browser is not supported";
+        }
+        // else keep the page clean for the bot.
     }
 })();

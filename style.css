@@ -40,3 +40,7 @@ button:hover,
 button:active {
   background: hsl(240, 100%, 70%);
 }
+
+#error-message {
+  color: red;
+}
