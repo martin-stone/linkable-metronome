@@ -26,8 +26,8 @@
             updateButton(source);
             return;
 
-            function onClickLink(deltaBpm) {
-                bpm = Math.max(1, bpm + deltaBpm);
+            function onClickLink(updateBpm) {
+                bpm = Math.max(1, updateBpm(bpm));
                 updateAudio(bpm);
                 updatePage(bpm);
             }
@@ -71,10 +71,24 @@
     }
 
     function setUpLinks(onClickLink) {
-        const links = Array.from(document.getElementById("bpm-links").children);
-        links.forEach(function (a) {
+        const addLinks = Array.from(document.getElementById("add-links").children);
+        addLinks.forEach(function (a) {
             a.onclick = function () {
-                onClickLink(parseInt(a.innerText));
+                const delta = parseInt(a.innerText)
+                onClickLink(function(bpm) {
+                    return bpm + delta;
+                });
+            };
+        });
+        const timesLinks = Array.from(document.getElementById("times-links").children);
+        timesLinks.forEach(function (a) {
+            const op = a.innerText.substring(0,1);
+            const num = parseInt(a.innerText.substring(1));
+            const factor = op === "÷" ? 1 / num : num;
+            a.onclick = function () {
+                onClickLink(function(bpm) {
+                    return Math.round(bpm * factor);
+                });
             };
         });
     }

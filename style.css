@@ -9,10 +9,12 @@ h2 {
   margin: 0;
 }
 
-#bpm-links a,
-#bpm-links a:visited {
+.bpm-links a,
+.bpm-links a:visited {
+  display: inline-block;
+  width: 2em;
   padding: 0.5em;
-  margin: 0.5em;
+  margin: 0 0.25em;
   font-weight: bold;
   color: blue;
   background-color: #ddd;
@@ -20,8 +22,8 @@ h2 {
   text-decoration: none;
 }
 
-#bpm-links a:hover,
-#bpm-links a:active {
+.bpm-links a:hover,
+.bpm-links a:active {
   background: #ccc;
   text-decoration: underline;
 }
@@ -51,7 +53,7 @@ table {
   text-align: right;
 }
 
-td:first-child {
+tr:nth-child(odd) td:first-child {
   font-weight: bold;
   font-size: 110%
 }
