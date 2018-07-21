@@ -1,4 +1,5 @@
 (function () {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
     const initialBpm = readBpm();
     updatePage(initialBpm);
     
@@ -12,7 +13,7 @@
     function main() {
         // Give context time to transition to "running" state (Firefox).
         // Else we'll assume that we need a touch event and begin stopped.
-        const context = new window.AudioContext();
+        const context = new AudioContext();
         setTimeout(begin, 500);
 
         function begin() {
@@ -138,14 +139,14 @@
     }
 
     function isBrowserSupported() {
-        return (typeof window.AudioContext == "function"
+        return (typeof AudioContext == "function"
             && typeof Array.from == "function"
             && typeof history.replaceState == "function"
         );
     }
 
     function browserMessage() {
-        const probablyHuman = !/bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent);
+        const probablyHuman = !/bot|crawl|spider/i.test(navigator.userAgent);
         if (probablyHuman) {
             document.getElementById("error-message").innerText = "Your browser is not supported";
         }
