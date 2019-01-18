@@ -1,4 +1,5 @@
 (function () {
+    const clickToneFreq = 1000; // Hz
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     const initialBpm = readBpm();
     updatePage(initialBpm);
@@ -114,7 +115,7 @@
     }
 
     function createBuffer(context, bpm) {
-        const sr = 8000;
+        const sr = context.sampleRate;
         const beatsPerBar = 1;
         const beatSecs = 60 / bpm;
         const beatSamps = Math.round(sr * beatSecs);
@@ -123,14 +124,18 @@
         const buffer = context.createBuffer(1, barSamps, sr);
         const data = buffer.getChannelData(0);
         for (var i = 0; i < buffer.length; i++) {
-            const ibeat = i % beatSamps;
-            data[i] = click(ibeat / sr * 10000);
+            const iBeat = i % beatSamps;
+            data[i] = click(iBeat / sr);
         }
         return buffer;
     }
 
-    function click(x) {
-        return 1 / x;
+    function click(tSec) {
+        // Cosine blend from sharp 1 down to zero, based on clickToneFreq.
+        const period = 0.5 / clickToneFreq;
+        return tSec > period 
+            ? 0 
+            : 0.5 * (1 + Math.cos(2 * Math.PI * clickToneFreq * tSec));
     }
 
     function readBpm() {
