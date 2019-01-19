@@ -1,5 +1,5 @@
 (function () {
-    const clickToneFreq = 1000; // Hz
+    const errorDiv = watchErrors();
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     const initialBpm = readBpm();
     updatePage(initialBpm);
@@ -21,6 +21,7 @@
             const canAutoplay = context.state == "running";
             var bpm = initialBpm;
             var source = null;
+            var buffer = null;
 
             setUpLinks(onClickLink);
             attachButton(onStartStopClick);
@@ -56,14 +57,20 @@
             }
         
             function onStartStopClick() {
-                if (source) {
-                    stop()
+                if (context.state != "running") {
+                    context.resume().then(onStartStopClick);
                 }
-                else {
-                    start();
+                else { 
+                    if (source) {
+                        stop()
+                    }
+                    else {
+                        start();
+                    }
+                    updateButton(source);
                 }
-                updateButton(source);
             }
+
         }
     }
 
@@ -132,6 +139,7 @@
 
     function click(tSec) {
         // Cosine blend from sharp 1 down to zero, based on clickToneFreq.
+        const clickToneFreq = 1000; // Hz
         const period = 0.5 / clickToneFreq;
         return tSec > period 
             ? 0 
@@ -151,10 +159,26 @@
     }
 
     function browserMessage() {
-        const probablyHuman = !/bot|crawl|spider/i.test(navigator.userAgent);
-        if (probablyHuman) {
-            document.getElementById("error-message").innerText = "Your browser is not supported";
+        if (probablyHuman()) {
+            errorDiv.innerText = "Your browser is not supported";
         }
         // else keep the page clean for the bot.
     }
+
+    function watchErrors() {
+        const errorDiv = document.getElementById("error-message");
+        if (probablyHuman()) {
+            window.addEventListener('error', function(event) { 
+                errorDiv.innerText = 
+                    event.message +
+                    "\n(Line " + event.lineno +")";
+            });
+        }
+        return errorDiv;
+    }
+
+    function probablyHuman() {
+        return !/bot|crawl|spider/i.test(navigator.userAgent);
+    }
+
 })();
