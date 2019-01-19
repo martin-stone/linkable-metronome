@@ -1,7 +1,9 @@
 (function () {
     const errorDiv = watchErrors();
     const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const minBpm = 30;
     const initialBpm = readBpm();
+
     updatePage(initialBpm);
     
     if (isBrowserSupported()) {
@@ -20,33 +22,26 @@
         function begin() {
             const canAutoplay = context.state == "running";
             var bpm = initialBpm;
-            var source = null;
-            var buffer = null;
+            var buffer = createBuffer(context);
+            var source = canAutoplay ? start() : null;
 
             setUpLinks(onClickLink);
             attachButton(onStartStopClick);
-            updateAudio(bpm, canAutoplay);
             updateButton(source);
             return;
 
             function onClickLink(updateBpm) {
-                bpm = Math.max(1, updateBpm(bpm));
-                updateAudio(bpm);
+                bpm = Math.max(minBpm, updateBpm(bpm));
+                setSourceLoop(source, bpm);
                 updatePage(bpm);
-            }
-
-            function updateAudio(bpm, forceStart) {
-                const shouldStart = !!source || forceStart;
-                buffer = createBuffer(context, bpm);
-                if (shouldStart) {
-                    start();
-                }
             }
 
             function start() {
                 stop();
-                source = createSource(context, buffer)
+                source = createSource(context, buffer);
+                setSourceLoop(source, bpm);
                 source.start();
+                return source;
             }
 
             function stop() {
@@ -60,13 +55,8 @@
                 if (context.state != "running") {
                     context.resume().then(onStartStopClick);
                 }
-                else { 
-                    if (source) {
-                        stop()
-                    }
-                    else {
-                        start();
-                    }
+                else {
+                    source ? stop() : start();
                     updateButton(source);
                 }
             }
@@ -102,6 +92,12 @@
         });
     }
 
+    function setSourceLoop(source, bpm) {
+        if (source) {
+            source.loopEnd = 60 / bpm;
+        }
+    }
+
     function updatePage(bpm) {
         document.getElementById("title").innerText = bpm; 
         document.title = document.title.replace(/\d+/, bpm);
@@ -121,34 +117,28 @@
         return source;
     }
 
-    function createBuffer(context, bpm) {
+    function createBuffer(context) {
         const sr = context.sampleRate;
-        const beatsPerBar = 1;
-        const beatSecs = 60 / bpm;
-        const beatSamps = Math.round(sr * beatSecs);
-        const barSamps = beatsPerBar * beatSamps;
-
-        const buffer = context.createBuffer(1, barSamps, sr);
-        const data = buffer.getChannelData(0);
-        for (var i = 0; i < buffer.length; i++) {
-            const iBeat = i % beatSamps;
-            data[i] = click(iBeat / sr);
-        }
+        const maxBeatSecs = 60 / minBpm;
+        const bufferSamps = Math.round(sr * maxBeatSecs);
+        const buffer = context.createBuffer(1, bufferSamps, sr);
+        writeClick(buffer.getChannelData(0), sr);
         return buffer;
     }
 
-    function click(tSec) {
+    function writeClick(data, sr) {
         // Cosine blend from sharp 1 down to zero, based on clickToneFreq.
         const clickToneFreq = 1000; // Hz
-        const period = 0.5 / clickToneFreq;
-        return tSec > period 
-            ? 0 
-            : 0.5 * (1 + Math.cos(2 * Math.PI * clickToneFreq * tSec));
+        const clickSamps = sr * 0.5 / clickToneFreq;
+        for (var i = 0; i < clickSamps; i++) {
+            const tSec = i / sr;
+            data[i] = 0.5 * (1 + Math.cos(2 * Math.PI * clickToneFreq * tSec));
+        }
     }
 
     function readBpm() {
         const match = /bpm=(\d+)/gi.exec(document.location.search);
-        return match ? parseInt(match[1]) : 120;
+        return match ? Math.max(minBpm, parseInt(match[1])) : 120;
     }
 
     function isBrowserSupported() {
