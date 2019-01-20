@@ -1,12 +1,16 @@
 body {
+  padding: 1em;
   text-align: center;
-  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana,
-    Arial, sans-serif;
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Arial, sans-serif;
 }
 
 h1,
 h2 {
   margin: 0;
+}
+
+footer p {
+    margin-bottom: 2em;
 }
 
 .bpm-links a,
@@ -16,31 +20,34 @@ h2 {
   padding: 0.5em;
   margin: 0 0.25em;
   font-weight: bold;
-  color: blue;
-  background-color: #ddd;
+  color: black;
+  border: 2px solid gray;
   border-radius: 0.5em;
   text-decoration: none;
 }
 
 .bpm-links a:hover,
 .bpm-links a:active {
-  background: #ccc;
-  text-decoration: underline;
+  border-color: black;
 }
 
 button {
   color: white;
-  background: hsl(240, 100%, 50%);
+  background: darkgreen;
+  width: 6em;
   padding: 1em;
-  border: 1px solid gray;
-  border-radius: 0;
+  border: 2px solid rgba(0, 100, 0, 0);
+  border-radius: 0.5em;
   margin: 1em;
   font-weight: bold;
+}
+button.stop {
+  background: darkred;
 }
 
 button:hover,
 button:active {
-  background: hsl(240, 100%, 70%);
+  border: 2px solid black;
 }
 
 #error-message {

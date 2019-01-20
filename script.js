@@ -107,6 +107,7 @@
     function updateButton(source) {
         const button = document.getElementById("start-stop");
         button.innerText = source ? "Stop" : "Start";
+        button.className = source ? "stop" : "start";
     }
 
     function createSource(context, buffer) {
