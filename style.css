@@ -51,6 +51,11 @@ button:active {
   border: 2px solid black;
 }
 
+button.clicking, 
+a.clicking {
+  border-color: black;
+}
+
 #error-message {
   color: red;
 }

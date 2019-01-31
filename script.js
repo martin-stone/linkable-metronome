@@ -27,6 +27,7 @@
 
             setUpLinks(onClickLink);
             attachButton(onStartStopClick);
+            setUpKeyboard();
             updateButton(source);
             return;
 
@@ -90,6 +91,26 @@
                 });
             };
         });
+    }
+
+    function setUpKeyboard() {
+        const [...shortcutElements] = document.body.querySelectorAll("[data-shortcut]");
+        const keyMap = shortcutElements.reduce(function (km, element) {
+            const key = element.getAttribute("data-shortcut");
+            km[key.toUpperCase()] = element;
+            return km;
+        }, {});
+
+        document.body.onkeyup = function(event) {
+            const element = keyMap[event.key.toUpperCase()]; 
+            if (element) {
+                element.click();
+                element.className += " clicking";
+                setTimeout(function () {
+                    element.className = element.className.replace(" clicking", "");
+                }, 150);
+            }
+        }
     }
 
     function setSourceLoop(source, bpm) {

@@ -15,17 +15,21 @@
 <body>
     <h1 id="title">120</h1>
     <h2>bpm</h2>
+
     <p class="bpm-links" id="add-links">
-        <a href="javascript:void(0);">-5</a>
-        <a href="javascript:void(0);">-1</a>
-        <a href="javascript:void(0);">+1</a>
-        <a href="javascript:void(0);">+5</a>
+        <a href="javascript:void(0);" data-shortcut="ArrowDown">-5</a>
+        <a href="javascript:void(0);" data-shortcut="ArrowLeft">-1</a>
+        <a href="javascript:void(0);" data-shortcut="ArrowRight">+1</a>
+        <a href="javascript:void(0);" data-shortcut="ArrowUp">+5</a>
     </p>
+
     <p class="bpm-links" id="times-links">
-        <a href="javascript:void(0);">&divide;2</a>
-        <a href="javascript:void(0);">&times;2</a>
+        <a href="javascript:void(0);" data-shortcut="PageDown">&divide;2</a>
+        <a href="javascript:void(0);" data-shortcut="PageUp">&times;2</a>
     </p>
-    <button id="start-stop">Start</button>
+
+    <button id="start-stop" autofocus data-shortcut="S">Start</button>
+
     <footer>
         <p>
             <a href="list.html">BPM Picker</a>
