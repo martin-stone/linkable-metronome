@@ -1,6 +1,6 @@
 # Linkable Metronome
 
-A browser-based metronome that lets you bookmark a specific tempo (in beats per minute). 
+A browser-based metronome that lets you bookmark a specific tempo (in beats per minute).
 
 For example
 [119 BPM](https://martin-stone.github.io/linkable-metronome/?bpm=119),
@@ -14,3 +14,17 @@ You can use the buttons on the metronome page to change the tempo, or set the BP
 You can paste the URL into any practice schedule document that you use, to easily jump straight to the BPM for each piece.
 
 Web browsers that don't support AudioContext are not supported (e.g. Internet Explorer).
+
+## Keyboard Shortcuts
+
+|    Key    |    Action    |
+| :-------: | :----------: |
+|     S     | Start / Stop |
+|  &larr;   |      -5      |
+|  &darr;   |      -1      |
+|  &uarr;   |      +1      |
+|  &rarr;   |      +5      |
+| Page Down |  &divide;2   |
+|  Page Up  |   &times;2   |
+
+In addition, Tab, Enter and Space work as normal.

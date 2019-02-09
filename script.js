@@ -17,6 +17,7 @@
         // Give context time to transition to "running" state (Firefox).
         // Else we'll assume that we need a touch event and begin stopped.
         const context = new AudioContext();
+        setUpKeyboard();
         setTimeout(begin, 500);
 
         function begin() {
@@ -27,7 +28,6 @@
 
             setUpLinks(onClickLink);
             attachButton(onStartStopClick);
-            setUpKeyboard();
             updateButton(source);
             return;
 
